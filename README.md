@@ -43,7 +43,7 @@ The implementation uses
 
 ## Implementation Details
 
-Folder structure
+Folder structure is the following:
 
 - `/api`: the NodeJs Azure Function code used to provide the backend API, called by the Vue.Js client
 - `/client`: the Vue.Js client. Original source code has been taken from official Vue.js sample and adapted to call a REST client instead of using local storage in order to save and retrieve todos
@@ -53,7 +53,7 @@ More details are available in this blog post: [TodoMVC Full Stack with Azure Sta
 
 ## Setup Database
 
-Execute the `/database/create.sql` script on a database of your choice. Could be a local SQL Server or an Azure SQL running in the cloud. Just make sure the desired database is reachable by your local machine (eg: firewall, authentication and so on), then use SQL Server Management Studio or Azure Data Studio to run the script. 
+Execute the `/database/create.sql` script on a database of your choice. Could be a local SQL Server or an Azure SQL running in the cloud. Just make sure the desired database is reachable by your local machine (eg: firewall, authentication and so on), then use SQL Server Management Studio or Azure Data Studio to run the script.
 
 Of course if you want to deploy the solution on Azure, use Azure SQL.
 
@@ -69,39 +69,32 @@ Remember that if you don't have Linux environment where you can run [AZ CLI](htt
 
 If you are completely new to Azure SQL, no worries! Here's a full playlist that will help you: [Azure SQL for beginners](https://www.youtube.com/playlist?list=PLlrxD0HtieHi5c9-i_Dnxw9vxBY-TqaeN).
 
-
 ## Running local
 
 Now use the `/api/.env.template` file to create an `.env` file and add the correct information needed to access your SQL Server or Azure SQL.
 
 Details on how to run Azure Static WebApps locally can be found here:
 
-[Set up local development for Azure Static Web Apps Preview](https://docs.microsoft.com/en-us/azure/static-web-apps/local-development)
+[Set up local development for Azure Static Web Apps](https://docs.microsoft.com/en-us/azure/static-web-apps/local-development)
 
-Long story short (make sure you have installed all the prerequisites mentioned in the link above):
-- Run Azure Function from within Visual Studio Code (just hit F5 on the `/api` folder)
-- Serve `/client/index.html` using Visual Studio Code Live Server
+Long story short:
+
+- Install the Azure Static Web Apps CLI: `npm install -g @azure/static-web-apps-cli`
+- From the root folder run: `swa start --api ./api`
+
+Easy, right?
 
 ## Running on Azure
 
-This is the amazing part of using Azure Static WebApps. Deploying to Azure is completely automated via GitHub actions.
+This is the amazing part of using Azure Static Web Apps. Deploying to Azure is completely automated via GitHub actions. There are some manual steps because the Static Web Apps CLI is still in Preview at the moment of writing and because Prisma and the Azure Static Web App GitHub Action need some help the get along.
 
-1. Fork this repository 
-1. Open the Azure Portal
-1. Create a "Static Web App" resource and follow the instruction here: [Building your first static web app in the Azure portal](https://docs.microsoft.com/en-us/azure/static-web-apps/get-started-portal?tabs=vanilla-javascript), but:  
-   - When asked for GitHub repo details, point to the forked repo you just created
-   - Select "main" as branch
-   - Select "Custom" in the "Build Presets" dropdown
-   - Set `client` as "App location"
-1. Wait for resource creation and GitHub action completion. Once the resource is ready, click on "Go to Resource".
-1. Be patient, now GitHub Action will kick in and deploy the full-stack website. It will take a couple of minutes.
-1. Relax.
-1. Grab some coffee or tea.
-1. Drink it.
-1. Click on "Functions" and you should be able to see the `todo` function listed.
-1. Go to the "Configuration" tab and add the same key and values that you have in your `.env` file you created earlier for local execution.
-1. Go to "Overview" and click on "Browse" to open your website. Done!
+1. Fork this repository
+1. Get a [GitHub Token](https://docs.microsoft.com/en-us/azure/static-web-apps/publish-azure-resource-manager?tabs=azure-cli#create-a-github-personal-access-token)
+1. Run `./azure-deploy.sh`. Please note that if this is the first time you run it, it will create an `.env` file in the root folder. Fill the `.env` file. Run the `./azure-deploy.sh` again.
+1. Once the deployment is done go to the Azure portal, and open the Azure Static Web App resource just created.
+1. Open the "Configuration" pane and add a new environment variable named `DATABASE_URL` and assign the value of the database connection string mentioned before in the local development section.
+1. Done! Well, not really, read next.
 
-### Azure Static Web App Preview 
+### Azure Static Web App Free Tier
 
-Azure Static Web App are in Preview and at the moment only support a Free tier...which is absolutely great so that you can try them for free, but of course don't expect great performances. REST API response will be in the 500 msec area. Keep this in mind if you are planning to use them for something different than testing. If you need better performance right now and cannot when for when Azure Static Web App will be out of preview, you can always deploy the REST API using plain Azure Functions where you can have amazing scalability and performance.
+Azure Static Web App support a Free tier...which is absolutely great so that you can try them for free, but of course don't expect great performances. REST API response will be in the 500 msec area. Keep this in mind if you are planning to use them for something different than testing. If you need better performance right now and cannot when for when Azure Static Web App will be out of preview, you can always deploy the REST API using plain Azure Functions where you can have amazing scalability and performance.

@@ -1,0 +1,78 @@
+{
+        "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+        "contentVersion": "1.0.0.0",
+        "parameters": {
+            "name": {
+                "type": "string"
+            },
+            "location": {
+                "type": "string"
+            },
+            "repositoryUrl": {
+                "type": "string"
+            },
+            "branch": {
+                "type": "string"
+            },
+            "repositoryToken": {
+                "type": "securestring"
+            },
+            "appLocation": {
+                "type": "string"
+            },
+            "apiLocation": {
+                "type": "string"
+            },
+            "db_server": {
+                "type": "string"
+            },
+            "db_user": {
+                "type": "securestring"
+            },
+            "db_password": {
+                "type": "securestring"
+            },
+            "db_database": {
+                "type": "securestring"
+            }
+
+        },
+        "resources": [
+            {
+                "apiVersion": "2021-01-15",
+                "name": "[parameters('name')]",
+                "type": "Microsoft.Web/staticSites",
+                "location": "[parameters('location')]",
+                "properties": {
+                    "repositoryUrl": "[parameters('repositoryUrl')]",
+                    "branch": "[parameters('branch')]",
+                    "repositoryToken": "[parameters('repositoryToken')]",
+                    "buildProperties": {
+                        "appLocation": "[parameters('appLocation')]",
+                        "apiLocation": "[parameters('apiLocation')]"
+                    }
+                },
+                "sku": {
+                    "Tier": "Free",
+                    "Name": "Free"
+                },
+                "resources":[
+                    {
+                        "apiVersion": "2021-01-15",
+                        "name": "appsettings",
+                        "type": "config",
+                        "location": "[parameters('location')]",
+                        "properties": {
+                            "db_server": "[parameters('db_server')]",
+                            "db_user": "[parameters('db_server')]",
+                            "db_password": "[parameters('db_server')]",
+                            "db_database": "[parameters('db_server')]"
+                        },
+                        "dependsOn": [
+                            "[resourceId('Microsoft.Web/staticSites', parameters('name'))]"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
